@@ -15,6 +15,7 @@ export function ActaImage({ data }: { data: ActaTraceDto }) {
   const [error, setError] = useState<string | null>(null);
 
   const imagenes = useMemo<ImagenActaDto[]>(() => {
+    console.log("ActaImage imagenes", { imagenes: data.imagenes });
     return (data.imagenes ?? [])
       .filter((i) => !!i.pathipfs && isLikelyCid(i.pathipfs))
       .sort((a, b) => (a.pagina ?? 0) - (b.pagina ?? 0));
@@ -28,16 +29,16 @@ export function ActaImage({ data }: { data: ActaTraceDto }) {
   const total = imagenes.length;
 
   // ✅ Endpoint actual que devuelve el archivo (TIFF) desde tu mismo API
-  const downloadUrl = img?.pathipfs
-  ? buildIpfsImageUrl(img.pathipfs)
+ const downloadUrl = img?.pathipfs
+  ? buildIpfsImageUrl(img.pathipfs.replace('ipfs://', ''))
   : null;
+
 
 useEffect(() => {
   let cancelled = false;
 
-  async function loadAndConvert() {
+  async function loadAndConvert() {   
     if (!downloadUrl) return;
-
     setLoadingImg(true);
     setError(null);
     setRenderUrl(null);
